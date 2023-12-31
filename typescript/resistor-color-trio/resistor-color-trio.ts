@@ -1,35 +1,28 @@
-const COLORS: string[] = ["black", "brown", "red", "orange", "yellow", "green", "blue", "violet", "grey", "white"];
+function decodedResistorValue(colors: string[]): string {
+    const colorCodeMap: { [color: string]: number } = {
+        black: 0,
+        brown: 1,
+        red: 2,
+        orange: 3,
+        yellow: 4,
+        green: 5,
+        blue: 6,
+        violet: 7,
+        grey: 8,
+        white: 9,
+    };
 
-export const decodedResistorValue = (colors: string[]): string => {
-    const firstColor = COLORS.indexOf(colors[0]).toString();
-    const secondColor = COLORS.indexOf(colors[1]).toString();
-    const numberOfZeros = "0".repeat(COLORS.indexOf(colors[2]));
+    const value = (colorCodeMap[colors[0]] * 10 + colorCodeMap[colors[1]]) * Math.pow(10, colorCodeMap[colors[2]]);
+    const units = ["ohms", "kiloohms", "megaohms", "gigaohms"];
 
-    let inOhms = firstColor + secondColor + numberOfZeros;
-
-    let metric;
-    if (inOhms.length <= 3) {
-        metric = " ohms";
-    } else if (inOhms.length <= 6) {
-        inOhms = inOhms.slice(0, -3);
-        metric = " kiloohms";
-    } else if (inOhms.length <= 9) {
-        inOhms = inOhms.slice(0, -6);
-        metric = " megaohms";
-    } else {
-        inOhms = inOhms.slice(0, -9);
-        metric = " gigaohms";
+    let unitIndex = 0;
+    let resistance = value;
+    while (resistance >= 1000 && unitIndex < units.length - 1) {
+        resistance /= 1000;
+        unitIndex++;
     }
 
-    // Remove leading zeros only if the value is not "00"
-    if (inOhms !== "00") {
-        inOhms = inOhms.replace(/^0+/, "");
-    }
+    return `${resistance} ${units[unitIndex]}`;
+}
 
-    // Special case for "0 ohms"
-    if (inOhms === "00") {
-        inOhms = "0";
-    }
-
-    return inOhms + metric;
-};
+export { decodedResistorValue };
